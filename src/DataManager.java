@@ -1,18 +1,15 @@
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import model.CargoEntity;
+import model.FlightEntity;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
 public class DataManager {
-    public FlightEntity [] flights;
-    public CargoEntity [] cargos;
+    public FlightEntity[] flights;
+    public CargoEntity[] cargos;
     public ArrayList<String> airportsList;
     public ArrayList<Date> datesList;
     public ArrayList<String> datesFormattedList;
@@ -36,16 +33,16 @@ public class DataManager {
         datesFormattedList = new ArrayList<>();
         Locale loc = new Locale("en", "US");
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT, loc);
-        for(int i=0; i<flights.length;i++) {
-            if(!airportsList.contains(flights[i].arrivalAirportIATACode)){
-                airportsList.add(flights[i].arrivalAirportIATACode);
+        for (FlightEntity flight : flights) {
+            if (!airportsList.contains(flight.getArrivalAirportIATACode())) {
+                airportsList.add(flight.getArrivalAirportIATACode());
             }
-            if(!airportsList.contains(flights[i].departureAirportIATACode)){
-                airportsList.add(flights[i].departureAirportIATACode);
+            if (!airportsList.contains(flight.getDepartureAirportIATACode())) {
+                airportsList.add(flight.getDepartureAirportIATACode());
             }
-            if(!datesFormattedList.contains(dateFormat.format(flights[i].departureDate))){
-                datesList.add(flights[i].departureDate);
-                String date = dateFormat.format(flights[i].departureDate);
+            if (!datesFormattedList.contains(dateFormat.format(flight.getDepartureDate()))) {
+                datesList.add(flight.getDepartureDate());
+                String date = dateFormat.format(flight.getDepartureDate());
                 datesFormattedList.add(date);
             }
         }

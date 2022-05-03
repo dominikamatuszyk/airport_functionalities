@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+package model;
 
 public class CargoEntity {
     int flightId;
@@ -10,23 +10,11 @@ public class CargoEntity {
         return flightId;
     }
 
-    public void setFlightId(int flightId) {
-        this.flightId = flightId;
-    }
-
     public Baggage[] getBaggage() {
         return baggage;
     }
 
-    public void setBaggage(Baggage[] baggage) {
-        this.baggage = baggage;
-    }
-
     public Cargo[] getCargo() {
         return cargo;
-    }
-
-    public void setCargo(Cargo[] cargo) {
-        this.cargo = cargo;
     }
 }

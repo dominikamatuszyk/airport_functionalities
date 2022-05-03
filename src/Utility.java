@@ -1,7 +1,7 @@
-import javax.xml.crypto.Data;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
 
 public class Utility {
     DataManager dm;
@@ -11,60 +11,52 @@ public class Utility {
     }
 
     String getFlightInfo(int flightNum, Date date){
-        int cargoWeight = 0, baggageWeight = 0, totalWeight = 0, flightId = 0;
+        int cargoWeight = 0;
+        int baggageWeight = 0;
+        int totalWeight = 0;
+        int flightId = 0;
         for(int i=0; i<dm.flights.length; i++){
-            if(dm.flights[i].flightNumber == flightNum && compareDates(dm.flights[i].departureDate,date)){
-                flightId = dm.flights[i].flightId;
+            if(dm.flights[i].getFlightNumber() == flightNum && isDateEqual(dm.flights[i].getDepartureDate(),date)){
+                flightId = dm.flights[i].getFlightId();
                 break;
             }
         }
         for(int i = 0; i<dm.cargos.length; i++){
-            if(dm.cargos[i].flightId == flightId){
-                for(int j = 0; j<dm.cargos[i].baggage.length; j++){
-                    baggageWeight += dm.cargos[i].baggage[j].weight;
+            if(dm.cargos[i].getFlightId() == flightId){
+                for(int j = 0; j<dm.cargos[i].getBaggage().length; j++){
+                    baggageWeight += dm.cargos[i].getBaggage()[j].getWeight();
                 }
-                for(int j = 0; j<dm.cargos[i].cargo.length; j++){
-                    cargoWeight += dm.cargos[i].cargo[j].weight;
+                for(int j = 0; j<dm.cargos[i].getCargo().length; j++){
+                    cargoWeight += dm.cargos[i].getCargo()[j].getWeight();
                 }
             }
         }
         totalWeight = cargoWeight + baggageWeight;
-
-       return ("a. Cargo Weight for requested Flight: " + cargoWeight +
-        "\nb. Baggage Weight for requested Flight: " + baggageWeight +
+        return ("a. model.Cargo Weight for requested Flight: " + cargoWeight +
+        "\nb. model.Baggage Weight for requested Flight: " + baggageWeight +
         "\nc. Total Weight for requested Flight: " + totalWeight);
-
     }
 
     String getAirportInfo(String code, int dateIndex) {
-        int flightsCounterDepart = 0, flightsCounterArrival = 0;
-        int baggageArrival = 0, baggageDepart = 0;
+        int flightsCounterDepart = 0;
+        int flightsCounterArrival = 0;
+        int baggageArrival = 0;
+        int baggageDepart = 0;
         for (int i = 0; i < dm.flights.length; i++) {
-            if (compareDates(dm.flights[i].departureDate, dm.datesList.get(dateIndex))) {
-                if (dm.flights[i].departureAirportIATACode.equals(code)) {
+            if (isDateEqual(dm.flights[i].getDepartureDate(), dm.datesList.get(dateIndex))) {
+                if (dm.flights[i].getDepartureAirportIATACode().equals(code)) {
                     flightsCounterDepart++;
-                    if (dm.cargos[i].flightId == dm.flights[i].flightId) {
-                        for (int j = 0; j < dm.cargos[i].baggage.length; j++) {
-                            baggageDepart += dm.cargos[i].baggage[j].pieces;
-                        }
-                    }
+                    baggageDepart = getBaggagePieces(baggageDepart, i);
                 }
-                else if (dm.flights[i].arrivalAirportIATACode.equals(code)) {
+                else if (dm.flights[i].getArrivalAirportIATACode().equals(code)) {
                     flightsCounterArrival++;
-                    if (dm.cargos[i].flightId == dm.flights[i].flightId) {
-                        for (int j = 0; j < dm.cargos[i].baggage.length; j++) {
-                            baggageArrival += dm.cargos[i].baggage[j].pieces;
-                        }
-                    }
+                    baggageArrival = getBaggagePieces(baggageArrival, i);
                 }
             }
         }
-
-        if (flightsCounterArrival==0 &&  flightsCounterDepart == 0) {
-            System.out.println("NO FLIGHTS");
+        if (flightsCounterArrival==0 && flightsCounterDepart == 0) {
             return "There are no flights from or to the " + code + " airport.";
         }
-
         return ("a. Number of flights departing from this airport: " + flightsCounterDepart
                 + "\nb. Number of flights arriving to this airport: " + flightsCounterArrival
                 + "\nc. Total number (pieces) of baggage arriving to this airport: " + baggageArrival
@@ -72,18 +64,24 @@ public class Utility {
 
     }
 
-    boolean compareDates(Date date1, Date date2) {
-        int month1 = date1.getMonth();
-        int day1 = date1.getDay();
-        int year1 = date1.getYear();
-        Date newDate1 = new Date(month1, day1, year1);
-
-        int month2 = date2.getMonth();
-        int day2 = date2.getDay();
-        int year2 = date2.getYear();
-        Date newDate2 = new Date(month2, day2, year2);
-
-        return (newDate1.equals(newDate2));
+    private int getBaggagePieces(int baggageDepart, int i) {
+        if (dm.cargos[i].getFlightId() == dm.flights[i].getFlightId()) {
+            for (int j = 0; j < dm.cargos[i].getBaggage().length; j++) {
+                baggageDepart += dm.cargos[i].getBaggage()[j].getPieces();
+            }
+        }
+        return baggageDepart;
     }
+
+    private boolean isDateEqual(Date date1, Date date2) {
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        Instant instant1 = date1.toInstant();
+        LocalDate localDate1 = instant1.atZone(defaultZoneId).toLocalDate();
+        Instant instant2 = date2.toInstant();
+        LocalDate localDate2 = instant2.atZone(defaultZoneId).toLocalDate();
+        return (localDate1.equals(localDate2));
+    }
+
+    //MAVEN --> LOMBOK
 
 }

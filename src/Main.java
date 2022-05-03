@@ -1,12 +1,11 @@
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.xml.crypto.Data;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.FileNotFoundException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Date;
 
@@ -19,7 +18,6 @@ public class Main extends JFrame {
         dm.convertCargosJsonToArray();
         dm.setLists();
 
-        JFrame frame = new JFrame("JTable Test Display");
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
@@ -35,7 +33,7 @@ public class Main extends JFrame {
         DefaultTableModel model = new DefaultTableModel(header, 0);
         JTable flightsTable = new JTable(model);
         for (int i = 0; i < dm.flights.length; i++) {
-            model.addRow(new Object[]{dm.flights[i].flightId, dm.flights[i].flightNumber, dm.flights[i].departureAirportIATACode, dm.flights[i].arrivalAirportIATACode, dm.flights[i].departureDate});
+            model.addRow(new Object[]{dm.flights[i].getFlightId(), dm.flights[i].getFlightNumber(), dm.flights[i].getDepartureAirportIATACode(), dm.flights[i].getArrivalAirportIATACode(), dm.flights[i].getDepartureDate()});
         }
         JTableHeader flightsTableHeader = flightsTable.getTableHeader();
         tablePanel.add(flightsTableHeader, BorderLayout.NORTH);
@@ -43,8 +41,8 @@ public class Main extends JFrame {
         mainPanel.add(tablePanel, BorderLayout.NORTH);
 
         infoPanel.add(new JLabel("FLIGHT INFO"));
-        JTextArea flighsInfoArea = new JTextArea("Choose a flight to see more...");
-        infoPanel.add(flighsInfoArea);
+        JTextArea flightsInfoArea = new JTextArea("Choose a flight to see more...");
+        infoPanel.add(flightsInfoArea);
 
         infoPanel.add(new JLabel("AIRPORT INFO"));
         JPanel checkboxes = new JPanel();
@@ -69,7 +67,7 @@ public class Main extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 int flightId = (int) flightsTable.getValueAt(flightsTable.getSelectedRow(), 1);
                 Date date = (Date) flightsTable.getValueAt( flightsTable.getSelectedRow(), 4);
-                flighsInfoArea.setText(util.getFlightInfo(flightId, date));
+                flightsInfoArea.setText(util.getFlightInfo(flightId, date));
             }
         });
 
@@ -82,7 +80,6 @@ public class Main extends JFrame {
     }
 
     public static void main (String[]args) throws IOException {
-        DataManager dm = new DataManager();
         Main mw = new Main("Smart4Aviation");
         mw.setVisible(true);
     }
