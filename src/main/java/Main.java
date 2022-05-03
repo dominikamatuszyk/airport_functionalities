@@ -74,7 +74,8 @@ public class Main extends JFrame {
         searchBut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                airportInfoArea.setText(util.getAirportInfo((String) IATACodes.getSelectedItem(), dates.getSelectedIndex()));
+                Date date = dm.datesList.get(dates.getSelectedIndex());
+                airportInfoArea.setText(util.getAirportInfo((String) IATACodes.getSelectedItem(), date));
             }
         });
     }

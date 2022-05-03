@@ -13,14 +13,9 @@ public class Utility {
     String getFlightInfo(int flightNum, Date date){
         int cargoWeight = 0;
         int baggageWeight = 0;
-        int totalWeight = 0;
-        int flightId = 0;
-        for(int i=0; i<dm.flights.length; i++){
-            if(dm.flights[i].getFlightNumber() == flightNum && isDateEqual(dm.flights[i].getDepartureDate(),date)){
-                flightId = dm.flights[i].getFlightId();
-                break;
-            }
-        }
+        int totalWeight;
+        int flightId = -1;
+        flightId = getFlightId(flightNum, date, flightId);
         for(int i = 0; i<dm.cargos.length; i++){
             if(dm.cargos[i].getFlightId() == flightId){
                 for(int j = 0; j<dm.cargos[i].getBaggage().length; j++){
@@ -37,13 +32,24 @@ public class Utility {
         "\nc. Total Weight for requested Flight: " + totalWeight);
     }
 
-    String getAirportInfo(String code, int dateIndex) {
+     int getFlightId(int flightNum, Date date, int flightId) {
+        for(int i=0; i<dm.flights.length; i++){
+            if(dm.flights[i].getFlightNumber() == flightNum && isDateEqual(dm.flights[i].getDepartureDate(), date)){
+                flightId = dm.flights[i].getFlightId();
+                break;
+            }
+        }
+        return flightId;
+    }
+
+
+    String getAirportInfo(String code, Date date) {
         int flightsCounterDepart = 0;
         int flightsCounterArrival = 0;
         int baggageArrival = 0;
         int baggageDepart = 0;
         for (int i = 0; i < dm.flights.length; i++) {
-            if (isDateEqual(dm.flights[i].getDepartureDate(), dm.datesList.get(dateIndex))) {
+            if (isDateEqual(dm.flights[i].getDepartureDate(), date)) {
                 if (dm.flights[i].getDepartureAirportIATACode().equals(code)) {
                     flightsCounterDepart++;
                     baggageDepart = getBaggagePieces(baggageDepart, i);
@@ -54,7 +60,7 @@ public class Utility {
                 }
             }
         }
-        if (flightsCounterArrival==0 && flightsCounterDepart == 0) {
+        if (flightsCounterArrival == 0 && flightsCounterDepart == 0) {
             return "There are no flights from or to the " + code + " airport.";
         }
         return ("a. Number of flights departing from this airport: " + flightsCounterDepart
@@ -64,8 +70,8 @@ public class Utility {
 
     }
 
-    private int getBaggagePieces(int baggageDepart, int i) {
-        if (dm.cargos[i].getFlightId() == dm.flights[i].getFlightId()) {
+     int getBaggagePieces(int baggageDepart, int i) {
+         if (dm.cargos[i].getFlightId() == dm.flights[i].getFlightId()) {
             for (int j = 0; j < dm.cargos[i].getBaggage().length; j++) {
                 baggageDepart += dm.cargos[i].getBaggage()[j].getPieces();
             }
@@ -73,7 +79,7 @@ public class Utility {
         return baggageDepart;
     }
 
-    private boolean isDateEqual(Date date1, Date date2) {
+    boolean isDateEqual(Date date1, Date date2) {
         ZoneId defaultZoneId = ZoneId.systemDefault();
         Instant instant1 = date1.toInstant();
         LocalDate localDate1 = instant1.atZone(defaultZoneId).toLocalDate();
